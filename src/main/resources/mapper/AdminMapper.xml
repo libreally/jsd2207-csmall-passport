@@ -5,32 +5,106 @@
 <mapper namespace="cn.tedu.csmall.passport.mapper.AdminMapper">
     <!--int insert();-->
     <insert id="insert">
-        insert into mall_ams.ams_admin
-        values (null,#{username},#{password},#{nickname},#{avatar},#{phone},#{email},
-        #{description},#{enable},#{lastLoginIp},#{loginCount},#{gmtLastLogin},#{gmtCreate},#{gmtModified})
+        INSERT INTO mall_ams.ams_admin
+        VALUES (null, #{username}, #{password}, #{nickname}, #{avatar}, #{phone}, #{email},
+                #{description}, #{enable}, #{lastLoginIp}, #{loginCount}, #{gmtLastLogin}, #{gmtCreate}, #{gmtModified})
     </insert>
+    <!--int insertBatch(List<Admin> admins);-->
+    <insert id="insertBatch">
+        INSERT INTO mall_ams.ams_admin
+        VALUES
+        <foreach collection="list" separator="," item="i">
+            (null,#{i.username},#{i.password},#{i.nickname},#{i.avatar},#{i.phone},#{i.email},
+            #{i.description},#{i.enable},#{i.lastLoginIp},#{i.loginCount},#{i.gmtLastLogin},#{i.gmtCreate},#{i.gmtModified})
+        </foreach>
+    </insert>
+    <!--int deleteById(Long id);-->
+    <delete id="deleteById">
+        DELETE
+        FROM mall_ams.ams_admin
+        WHERE id = #{id}
+    </delete>
+    <!--int deleteByIds(Long[] ids);-->
+    <delete id="deleteByIds">
+        DELETE FROM mall_ams.ams_admin
+        WHERE id IN (
+        <foreach collection="array" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </delete>
+    <!--int update(Admin admin);-->
+    <update id="update">
+        UPDATE mall_ams.ams_admin
+        <set>
+            <if test="username!=null">#{username}</if>
+            <if test="password!=null">#{password}</if>
+            <if test="nickname!=null">#{nickname}</if>
+            <if test="avatar!=null">#{avatar}</if>
+            <if test="phone!=null">#{phone}</if>
+            <if test="email!=null">#{email}</if>
+            <if test="description!=null">#{description}</if>
+            <if test="enable!=null">#{enable}</if>
+            <if test="lastLoginIp!=null">#{lastLoginIp}</if>
+            <if test="loginCount!=null">#{loginCount}</if>
+            <if test="gmtLastLogin!=null">#{gmtLastLogin}</if>
+            <if test="gmtCreate!=null">#{gmtCreate}</if>
+            <if test="gmtModified!=null">#{gmtModified}</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <!--int count();-->
+    <select id="count">
+        SELECT COUNT(*)
+        FROM mall_ams.ams_admin
+    </select>
     <!--int countByUsername(String username);-->
     <select id="countByUsername" resultType="int">
         SELECT count(*)
         FROM mall_ams.ams_admin
-        WHERE username=#{username}
+        WHERE username = #{username}
     </select>
     <!--int countByPhone(String phone);-->
     <select id="countByPhone" resultType="int">
         SELECT count(*)
         FROM mall_ams.ams_admin
-        WHERE phone=#{phone}
+        WHERE phone = #{phone}
     </select>
     <!--int countByEmail(String email);-->
     <select id="countByEmail" resultType="int">
         SELECT count(*)
         FROM mall_ams.ams_admin
-        WHERE email=#{email}
+        WHERE email = #{email}
+    </select>
+    <!-- AdminStandardVO getStandardId(Long id);-->
+    <select id="getStandardId" resultMap="ListResultMap">
+        SELECT id,
+               username,
+               nickname,
+               avatar,
+               phone,
+               email,
+               description,
+               enable,
+               last_login_ip,
+               login_count,
+               gmt_last_login
+        FROM mall_ams.ams_admin
+        WHERE id = #{id}
     </select>
     <!--List<AdminListVO> list();-->
     <select id="list" resultMap="ListResultMap">
-        SELECT id, username, nickname, avatar, phone, email, description,
-               enable, last_login_ip, login_count, gmt_last_login
+        SELECT id,
+               username,
+               nickname,
+               avatar,
+               phone,
+               email,
+               description,
+               enable,
+               last_login_ip,
+               login_count,
+               gmt_last_login
         FROM mall_ams.ams_admin
         ORDER BY id
     </select>
