@@ -1,0 +1,12 @@
+# 激活Profile配置
+spring:
+  profiles:
+    active: dev
+
+# Mybatis相关配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+# knife4j相关配置
+knife4j:
+  enable: true
