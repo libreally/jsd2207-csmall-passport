@@ -6,6 +6,7 @@ import cn.tedu.csmall.passport.mapper.AdminMapper;
 import cn.tedu.csmall.passport.pojo.dto.AdminAddNewDTO;
 import cn.tedu.csmall.passport.pojo.entity.Admin;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
+import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.ServiceCode;
 import lombok.extern.slf4j.Slf4j;
@@ -96,5 +97,23 @@ public class AdminServiceImpl implements IAdminService {
     public List<AdminListVO> list() {
         log.debug("查询管理员列表");
         return adminMapper.list();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        log.debug("开始处理【根据id删除管理员】的业务，参数：{}", id);
+        AdminStandardVO standardId = adminMapper.getStandardId(id);
+        if (standardId==null){
+            String message = "删除管理员失败，尝试访问的数据不存在！";
+            log.debug(message);
+            throw new ServiceException(ServiceCode.ERR_NOT_FOUND, message);
+        }
+        log.debug("即将执行删除，参数：{}", id);
+        int rows = adminMapper.deleteById(id);
+        if (rows != 1) {
+            String message = "删除相册失败，服务器忙，请稍后再尝试！";
+            log.debug(message);
+            throw new ServiceException(ServiceCode.ERR_DELETE, message);
+        }
     }
 }

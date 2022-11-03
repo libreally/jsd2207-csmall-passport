@@ -1,6 +1,7 @@
 package cn.tedu.csmall.passport.mapper;
 
 import cn.tedu.csmall.passport.pojo.entity.Admin;
+import cn.tedu.csmall.passport.service.IAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class AdminMapperTest {
     @Autowired
     AdminMapper adminMapper;
+    @Autowired
+    IAdminService adminService;
     @Test
     void insert(){
         Admin admin = new Admin();
@@ -31,4 +34,5 @@ public class AdminMapperTest {
     void list(){
         adminMapper.list();
     }
+
 }

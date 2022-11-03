@@ -11,5 +11,6 @@ import java.util.List;
 public interface IAdminService {
     void addAdmin(AdminAddNewDTO adminAddNewDTO);
     List<AdminListVO> list();
+    void deleteById(Long id);
 
 }

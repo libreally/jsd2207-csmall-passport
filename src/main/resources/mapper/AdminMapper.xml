@@ -54,7 +54,7 @@
         WHERE id=#{id}
     </update>
     <!--int count();-->
-    <select id="count">
+    <select id="count" resultType="int">
         SELECT COUNT(*)
         FROM mall_ams.ams_admin
     </select>
@@ -76,8 +76,8 @@
         FROM mall_ams.ams_admin
         WHERE email = #{email}
     </select>
-    <!-- AdminStandardVO getStandardId(Long id);-->
-    <select id="getStandardId" resultMap="ListResultMap">
+    <!-- AdminStandardVO getStandarId(Long id);-->
+    <select id="getStandardId" resultType="cn.tedu.csmall.passport.pojo.vo.AdminStandardVO">
         SELECT id,
                username,
                nickname,

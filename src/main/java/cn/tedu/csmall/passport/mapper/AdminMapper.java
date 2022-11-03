@@ -18,6 +18,6 @@ public interface AdminMapper {
     int countByUsername(String username);
     int countByPhone(String phone);
     int countByEmail(String email);
-    AdminStandardVO getStandarId(Long id);
+    AdminStandardVO getStandardId(Long id);
     List<AdminListVO> list();
 }
