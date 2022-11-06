@@ -1,5 +1,6 @@
 -- mall_ams
-
+create database mall_ams charset utf8;
+use mall_ams;
 DROP TABLE IF EXISTS ams_admin;
 
 CREATE TABLE ams_admin

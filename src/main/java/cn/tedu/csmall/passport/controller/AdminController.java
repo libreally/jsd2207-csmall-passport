@@ -42,11 +42,11 @@ public class AdminController {
     @ApiOperationSupport(order = 420)
     @GetMapping("")
     public JsonResult<List<AdminListVO>> list() {
-        log.debug("开始处理【查询相册列表】的请求，无参数");
+        log.debug("开始处理【查询管理员列表】的请求，无参数");
         List<AdminListVO> list = iAdminService.list();
         return JsonResult.ok(list);
     }
-    @ApiOperation("根据id删除相册")
+    @ApiOperation("删除管理员")
     @ApiOperationSupport(order = 200)
     @ApiImplicitParam(name = "id", value = "相册id", required = true, dataType = "long")
     @PostMapping("/{id:[0-9]+}/delete")
