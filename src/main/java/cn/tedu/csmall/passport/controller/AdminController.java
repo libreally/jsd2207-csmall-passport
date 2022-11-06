@@ -56,4 +56,27 @@ public class AdminController {
         iAdminService.deleteById(id);
         return JsonResult.ok();
     }
+
+    @ApiOperation("启用管理员")
+    @ApiOperationSupport(order = 310)
+    @ApiImplicitParam(name = "id", value = "管理员id", required = true, dataType = "long")
+    @PostMapping("/{id:[0-9]+}/enable")
+    public JsonResult<Void> setEnable(@Range(min = 1, message = "启用管理员失败，尝试启用的管理员的ID无效！")
+                                      @PathVariable Long id) {
+        log.debug("开始处理【启用管理员】的请求，参数：{}", id);
+        iAdminService.setEnable(id);
+        return JsonResult.ok();
+    }
+
+    // http://localhost:8080/admins/9527/disable
+    @ApiOperation("禁用管理员")
+    @ApiOperationSupport(order = 311)
+    @ApiImplicitParam(name = "id", value = "管理员id", required = true, dataType = "long")
+    @PostMapping("/{id:[0-9]+}/disable")
+    public JsonResult<Void> setDisable(@Range(min = 1, message = "禁用管理员失败，尝试禁用的管理员的ID无效！")
+                                       @PathVariable Long id) {
+        log.debug("开始处理【禁用管理员】的请求，参数：{}", id);
+        iAdminService.setDisable(id);
+        return JsonResult.ok();
+    }
 }
