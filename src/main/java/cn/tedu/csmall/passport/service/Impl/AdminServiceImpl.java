@@ -3,8 +3,10 @@ package cn.tedu.csmall.passport.service.Impl;
 
 import cn.tedu.csmall.passport.ex.ServiceException;
 import cn.tedu.csmall.passport.mapper.AdminMapper;
+import cn.tedu.csmall.passport.mapper.AdminRoleMapper;
 import cn.tedu.csmall.passport.pojo.dto.AdminAddNewDTO;
 import cn.tedu.csmall.passport.pojo.entity.Admin;
+import cn.tedu.csmall.passport.pojo.entity.AdminRole;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
 import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
 import cn.tedu.csmall.passport.service.IAdminService;
@@ -14,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,6 +25,8 @@ import java.util.List;
 public class AdminServiceImpl implements IAdminService {
     @Autowired
     private AdminMapper adminMapper;
+    @Autowired
+    private AdminRoleMapper adminRoleMapper;
 
     public AdminServiceImpl() {
         log.debug("创建业务对象：AdminServiceImpl");
@@ -88,6 +93,25 @@ public class AdminServiceImpl implements IAdminService {
         int rows = adminMapper.insert(admin);
         // 判断插入数据的结果是否符合预期
         if (rows != 1) {
+            String message = "添加管理员失败，服务器忙，请稍后再次尝试！";
+            log.warn(message);
+            throw new ServiceException(ServiceCode.ERR_INSERT, message);
+        }
+
+        // 插入管理员与角色关联的数据
+        Long[] roleIds = adminAddNewDTO.getRoleIds();
+        AdminRole[] adminRoles = new AdminRole[roleIds.length];
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 0; i < roleIds.length; i++) {
+            AdminRole adminRole = new AdminRole();
+            adminRole.setAdminId(admin.getId());
+            adminRole.setRoleId(roleIds[i]);
+            adminRole.setGmtCreate(now);
+            adminRole.setGmtModified(now);
+            adminRoles[i] = adminRole;
+        }
+        rows = adminRoleMapper.insertBatch(adminRoles);
+        if (rows != roleIds.length) {
             String message = "添加管理员失败，服务器忙，请稍后再次尝试！";
             log.warn(message);
             throw new ServiceException(ServiceCode.ERR_INSERT, message);
