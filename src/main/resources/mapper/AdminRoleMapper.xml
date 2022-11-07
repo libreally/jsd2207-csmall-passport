@@ -15,4 +15,8 @@
         </foreach>
     </insert>
 
+    <!--int deleteByAdminId(Long id);-->
+    <delete id="deleteByAdminId" >
+        DELETE FROM mall_ams.ams_admin_role WHERE admin_id=#{adminId}
+    </delete>
 </mapper>

@@ -25,7 +25,7 @@ public class AdminServiceTests {
         adminAddNewDTO.setEmail("wangkejing001@baidu.com");
 
         try {
-            service.addNew(adminAddNewDTO);
+            service.addAdmin(adminAddNewDTO);
             log.debug("添加管理员成功！");
         } catch (ServiceException e) {
             log.debug("{}", e.getMessage());
@@ -37,7 +37,7 @@ public class AdminServiceTests {
         Long id = 6L;
 
         try {
-            service.delete(id);
+            service.deleteById(id);
             log.debug("删除管理员成功！");
         } catch (ServiceException e) {
             log.debug("{}", e.getMessage());

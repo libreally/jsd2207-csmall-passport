@@ -91,7 +91,7 @@ public class AdminMapperTests {
     @Test
     void getStandardById() {
         Long id = 1L;
-        Object queryResult = mapper.getStandardById(id);
+        Object queryResult = mapper.getStandardId(id);
         log.debug("根据id【{}】查询数据详情完成，查询结果：{}", id, queryResult);
     }
 

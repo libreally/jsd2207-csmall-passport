@@ -148,6 +148,7 @@ public class AdminServiceImpl implements IAdminService {
             log.debug(message);
             throw new ServiceException(ServiceCode.ERR_NOT_FOUND, message);
         }
+        //删除管理员
         log.debug("即将执行删除，参数：{}", id);
         int rows = adminMapper.deleteById(id);
         /*事务处理*/
@@ -156,7 +157,17 @@ public class AdminServiceImpl implements IAdminService {
             log.debug(message);
             throw new ServiceException(ServiceCode.ERR_DELETE, message);
         }
+        //删除管理员与角色的关联数据
+        rows = adminRoleMapper.deleteByAdminId(id);
+        if (rows < 1) {
+            String message = "删除管理员失败，服务器忙，请稍后再尝试！";
+            log.debug(message);
+            throw new ServiceException(ServiceCode.ERR_DELETE, message);
+        }
+
     }
+
+
 
     @Override
     public void setEnable(Long id) {

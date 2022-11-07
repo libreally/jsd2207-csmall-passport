@@ -20,4 +20,10 @@ public interface AdminRoleMapper {
      */
     int insertBatch(AdminRole[] adminRoleList);
 
+    /**
+     * 根据管理员id删除管理员与角色的关联数据
+     * @param id
+     * @return
+     */
+    int deleteByAdminId(Long id);
 }
