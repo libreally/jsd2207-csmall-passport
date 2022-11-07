@@ -13,6 +13,8 @@ public enum ServiceCode {
      */
     OK(20000),
     ERR_BAD_REQUEST(40000),
+    ERR_UNAUTHORIZED(40100),
+    ERR_UNAUTHORIZED_DISABLED(40101),
     /**
      * 错误：数据不存在
      */

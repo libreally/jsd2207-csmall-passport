@@ -1,6 +1,7 @@
 package cn.tedu.csmall.passport.controller;
 
 import cn.tedu.csmall.passport.pojo.dto.AdminAddNewDTO;
+import cn.tedu.csmall.passport.pojo.dto.AdminLoginDTO;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.JsonResult;
@@ -77,6 +78,15 @@ public class AdminController {
                                        @PathVariable Long id) {
         log.debug("开始处理【禁用管理员】的请求，参数：{}", id);
         iAdminService.setDisable(id);
+        return JsonResult.ok();
+    }
+    // http://localhost:9081/admins/login
+    @ApiOperation("管理员登录")
+    @ApiOperationSupport(order = 50)
+    @PostMapping("/login")
+    public JsonResult<Void> login(AdminLoginDTO adminLoginDTO) {
+        log.debug("开始处理【管理员登录】的请求，参数：{}", adminLoginDTO);
+        iAdminService.longin(adminLoginDTO);
         return JsonResult.ok();
     }
 }

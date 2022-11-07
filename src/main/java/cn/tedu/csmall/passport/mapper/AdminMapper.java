@@ -2,6 +2,7 @@ package cn.tedu.csmall.passport.mapper;
 
 import cn.tedu.csmall.passport.pojo.entity.Admin;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
+import cn.tedu.csmall.passport.pojo.vo.AdminLonginInfoVO;
 import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,5 @@ public interface AdminMapper {
     int countByEmail(String email);
     AdminStandardVO getStandardId(Long id);
     List<AdminListVO> list();
+    AdminLonginInfoVO getLoginInfoByUsername(String username);
 }

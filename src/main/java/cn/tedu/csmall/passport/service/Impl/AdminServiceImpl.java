@@ -5,6 +5,7 @@ import cn.tedu.csmall.passport.ex.ServiceException;
 import cn.tedu.csmall.passport.mapper.AdminMapper;
 import cn.tedu.csmall.passport.mapper.AdminRoleMapper;
 import cn.tedu.csmall.passport.pojo.dto.AdminAddNewDTO;
+import cn.tedu.csmall.passport.pojo.dto.AdminLoginDTO;
 import cn.tedu.csmall.passport.pojo.entity.Admin;
 import cn.tedu.csmall.passport.pojo.entity.AdminRole;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
@@ -14,6 +15,9 @@ import cn.tedu.csmall.passport.web.ServiceCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,9 +31,18 @@ public class AdminServiceImpl implements IAdminService {
     private AdminMapper adminMapper;
     @Autowired
     private AdminRoleMapper adminRoleMapper;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public AdminServiceImpl() {
         log.debug("创建业务对象：AdminServiceImpl");
+    }
+
+    @Override
+    public void longin(AdminLoginDTO adminLoginDTO) {
+        log.debug("开始处理[管理员登录]的请求,参数:{}",adminLoginDTO);
+        Authentication authentication=new UsernamePasswordAuthenticationToken(adminLoginDTO.getUsername(), adminLoginDTO.getPassword());
+        authenticationManager.authenticate(authentication);
     }
 
     @Override
@@ -47,7 +60,7 @@ public class AdminServiceImpl implements IAdminService {
                 // 是：抛出异常
                 String message = "添加管理员失败，用户名【" + username + "】已经被占用！";
                 log.debug(message);
-                throw new ServiceException(ServiceCode.ERR_CONFLICT, message);
+                throw new ServiceException(ServiceCode.ERR_UNAUTHORIZED, message);
             }
         }
 

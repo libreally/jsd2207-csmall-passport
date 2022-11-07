@@ -108,6 +108,10 @@
         FROM mall_ams.ams_admin
         ORDER BY id
     </select>
+    <!--AdminLonginInfoVO getLoginInfoByUsername(String username);-->
+    <select id="getLoginInfoByUsername" resultType="cn.tedu.csmall.passport.pojo.vo.AdminLonginInfoVO">
+        SELECT id,username,password,enable FROM mall_ams.ams_admin WHERE username=#{username}
+    </select>
     <resultMap id="ListResultMap" type="cn.tedu.csmall.passport.pojo.vo.AdminListVO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
