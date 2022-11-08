@@ -12,7 +12,10 @@ import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
 import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.ServiceCode;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -39,10 +41,41 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Override
-    public void longin(AdminLoginDTO adminLoginDTO) {
-        log.debug("开始处理[管理员登录]的请求,参数:{}",adminLoginDTO);
-        Authentication authentication=new UsernamePasswordAuthenticationToken(adminLoginDTO.getUsername(), adminLoginDTO.getPassword());
-        authenticationManager.authenticate(authentication);//调用框架
+    public String login(AdminLoginDTO adminLoginDTO) {
+        log.debug("开始处理【管理员登录】的业务，参数：{}", adminLoginDTO);
+        // 执行认证
+        Authentication authentication
+                = new UsernamePasswordAuthenticationToken(
+                adminLoginDTO.getUsername(), adminLoginDTO.getPassword());
+        Authentication authenticateResult
+                = authenticationManager.authenticate(authentication);
+        log.debug("认证通过，认证管理器返回：{}", authenticateResult);
+
+        // 从认证结果中获取所需的数据，将用于生成JWT
+        Object principal = authenticateResult.getPrincipal();
+        log.debug("认证结果中的当事人类型：{}", principal.getClass().getName());
+        User user = (User) principal;
+        String username = user.getUsername();
+
+        // 生成JWT数据时，需要填充装到JWT中的数据
+        Map<String, Object> claims = new HashMap<>();
+        // claims.put("id", 9527);
+        claims.put("username", username);
+        // 以下是生成JWT的固定代码
+        String secretKey = "a9F8ujGDhjgFvfEd3SA90ukDS";
+        Date date = new Date(System.currentTimeMillis() + 5 * 24 * 60 * 60 * 1000L);
+        String jwt = Jwts.builder()
+                // Header
+                .setHeaderParam("alg", "HS256")
+                .setHeaderParam("typ", "JWT")
+                // Payload
+                .setClaims(claims)
+                // Signature
+                .setExpiration(date)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+        log.debug("生成的JWT：{}", jwt);
+        return jwt;
     }
 
     @Override

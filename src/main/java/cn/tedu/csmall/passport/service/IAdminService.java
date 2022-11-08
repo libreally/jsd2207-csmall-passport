@@ -11,7 +11,7 @@ import java.util.List;
 
 @Transactional
 public interface IAdminService {
-    void longin(AdminLoginDTO adminLoginDTO);
+    String login(AdminLoginDTO adminLoginDTO);
     void addAdmin(AdminAddNewDTO adminAddNewDTO);
     List<AdminListVO> list();
     void deleteById(Long id);

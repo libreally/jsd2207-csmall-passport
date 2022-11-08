@@ -85,9 +85,9 @@ public class AdminController {
     @ApiOperation("管理员登录")
     @ApiOperationSupport(order = 50)
     @PostMapping("/login")
-    public JsonResult<Void> login(AdminLoginDTO adminLoginDTO) {
+    public JsonResult<String> login(AdminLoginDTO adminLoginDTO) {
         log.debug("开始处理【管理员登录】的请求，参数：{}", adminLoginDTO);
-        iAdminService.longin(adminLoginDTO);
-        return JsonResult.ok();
+        String jwt = iAdminService.login(adminLoginDTO);
+        return JsonResult.ok(jwt);
     }
 }
