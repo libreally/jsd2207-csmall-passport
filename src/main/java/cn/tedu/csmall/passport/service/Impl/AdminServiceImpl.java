@@ -42,7 +42,7 @@ public class AdminServiceImpl implements IAdminService {
     public void longin(AdminLoginDTO adminLoginDTO) {
         log.debug("开始处理[管理员登录]的请求,参数:{}",adminLoginDTO);
         Authentication authentication=new UsernamePasswordAuthenticationToken(adminLoginDTO.getUsername(), adminLoginDTO.getPassword());
-        authenticationManager.authenticate(authentication);
+        authenticationManager.authenticate(authentication);//调用框架
     }
 
     @Override

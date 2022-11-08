@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * 实现spring Security 框架
+ */
 @Slf4j
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -19,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        log.debug("spring security 框架自动调用UserDetailsService中的loadUserByUsername");
+        log.debug("spring Security 框架自动调用UserDetailsService中的loadUserByUsername");
         AdminLonginInfoVO admin = adminMapper.getLoginInfoByUsername(s);
         log.debug("从数据库中根据用户名【{}】查询管理员信息，结果：{}", s, admin);
         if (admin == null) {

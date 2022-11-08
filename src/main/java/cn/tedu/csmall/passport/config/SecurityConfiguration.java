@@ -20,6 +20,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
        log.debug("创建配置类对象:SecurityConfiguration");
    }
 
+    /**
+     * 密码编码器
+     * @return
+     */
    @Bean
    public PasswordEncoder passwordEncoder(){
 //        return NoOpPasswordEncoder.getInstance();//无操作密码编码器,不对密码进行处理,不推荐
@@ -40,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
        //将防止伪造跨域攻击的机制禁用
        http.csrf().disable();
 
-       //白名单
+       //白名单  不需要请求就能看到的页面
        String[] urls={
                      "/favicon.ico",
                      "/doc.html",
