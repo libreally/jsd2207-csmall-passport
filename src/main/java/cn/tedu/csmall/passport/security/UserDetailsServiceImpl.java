@@ -36,27 +36,29 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new BadCredentialsException(message);
         }
 
-        // 处理权限信息
         List<GrantedAuthority> authorities = new ArrayList<>();
-        GrantedAuthority authority = new SimpleGrantedAuthority("这是一个假权限");
-        authorities.add(authority);
+        for (String permission : admin.getPermissions()) {
+            GrantedAuthority authority = new SimpleGrantedAuthority(permission);
+            authorities.add(authority);
+        }
 
         AdminDetails adminDetails = new AdminDetails(
                 admin.getId(),
                 admin.getUsername(),
                 admin.getPassword(),
-                admin.getEnable()==1,
+                admin.getEnable() == 1,
                 authorities);
-        /*UserDetails userDetails = User.builder()
-                .username(admin.getUsername())
-                .password(admin.getPassword())
-                .disabled(admin.getEnable() == 0)//账号是否被禁用
-                .accountLocked(false)//账号锁定
-                .accountExpired(false)//账号是否过期
-                .credentialsExpired(false)//凭证锁定机制
-                .authorities("权限表示")//账号权限
-                .build();*/
-        log.debug("即将向Spring Security框架返回adminDetails对象：{}", adminDetails);
+
+        // UserDetails userDetails = User.builder()
+        //        .username(admin.getUsername())
+        //        .password(admin.getPassword())
+        //        .disabled(admin.getEnable() == 0)
+        //        .accountLocked(false) // 此项目未设计“账号锁定”的机制，固定为false
+        //        .accountExpired(false) // 此项目未设计“账号过期”的机制，固定为false
+        //         .credentialsExpired(false) // 此项目未设计“凭证锁定”的机制，固定为false
+        //        .authorities("暂时给出的假的权限标识") // 权限
+        //        .build();
+        log.debug("即将向Spring Security框架返回UserDetails对象：{}", adminDetails);
         return adminDetails;
 
     }

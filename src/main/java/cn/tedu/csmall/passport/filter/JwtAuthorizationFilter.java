@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,9 +39,10 @@ import java.util.List;
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    public static final int JWT_MIN_LENGTH = 113;
+
     @Value("${csmall.jwt.secret-key}")
     private String secretKey;
-    public static final int JWT_MIN_LENGTH = 113;
 
     public JwtAuthorizationFilter() {
         log.info("创建过滤器对象：JwtAuthorizationFilter");
@@ -68,48 +67,60 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 尝试解析JWT
         log.debug("获取到的JWT被视为有效，准备解析JWT……");
-        Claims claims;
+        response.setContentType("application/json; charset=utf-8");
+        Claims claims = null;
         try {
             claims = Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(jwt)
                     .getBody();
-        } catch (ExpiredJwtException e) {
-            log.debug("解析JWT时出现ExpiredJwtException异常");
+        } catch (SignatureException e) {
+            log.debug("解析JWT时出现SignatureException");
+            String message = "非法访问！";
+            JsonResult<Void> jsonResult = JsonResult.fail(ServiceCode.ERR_JWT_SIGNATURE, message);
+            String jsonResultString = JSON.toJSONString(jsonResult);
+            PrintWriter writer = response.getWriter();
+            writer.println(jsonResultString);
             return;
         } catch (MalformedJwtException e) {
-            log.debug("解析JWT时出现MalformedJwtException异常");
+            log.debug("解析JWT时出现MalformedJwtException");
+            String message = "非法访问！";
+            JsonResult<Void> jsonResult = JsonResult.fail(ServiceCode.ERR_JWT_MALFORMED, message);
+            String jsonResultString = JSON.toJSONString(jsonResult);
+            PrintWriter writer = response.getWriter();
+            writer.println(jsonResultString);
             return;
-        } catch (SignatureException e) {
-            log.debug("解析JWT时出现SignatureException异常");
-
-            ServiceCode serviceCode = ServiceCode.ERR_JWT_SIGNATURE;
-            String message = "非法访问";
-            JsonResult<Void> jsonResult=JsonResult.fail(serviceCode,message);
-            String jsonResultString= JSON.toJSONString(jsonResult);
-            response.setContentType("text/html;charset=utf-8");
-            PrintWriter printWriter= response.getWriter();
-            printWriter.println(jsonResultString);
+        } catch (ExpiredJwtException e) {
+            log.debug("解析JWT时出现ExpiredJwtException");
+            String message = "登录信息已过期，请重新登录！";
+            JsonResult<Void> jsonResult = JsonResult.fail(ServiceCode.ERR_JWT_EXPIRED, message);
+            String jsonResultString = JSON.toJSONString(jsonResult);
+            PrintWriter writer = response.getWriter();
+            writer.println(jsonResultString);
             return;
         } catch (Throwable e) {
-            log.debug("解析JWT时出现Throwable异常,需要开发人员对异常的补充");
+            log.debug("解析JWT时出现Throwable，需要开发人员在JWT过滤器补充对异常的处理");
             e.printStackTrace();
+            String message = "你有异常没有处理，请根据服务器端控制台的信息，补充对此类异常的处理！！！";
+            PrintWriter writer = response.getWriter();
+            writer.println(message);
             return;
         }
 
         // 获取JWT中的管理员信息
+        Long id = claims.get("id", Long.class);
         String username = claims.get("username", String.class);
-        Long id=claims.get("id",Long.class);
+        String authoritiesJsonString = claims.get("authoritiesJsonString", String.class);
+        log.debug("从JWT中获取id：{}", id);
+        log.debug("从JWT中获取username：{}", username);
+        log.debug("从JWT中获取authoritiesJsonString：{}", authoritiesJsonString);
 
         // 处理权限信息
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        GrantedAuthority authority = new SimpleGrantedAuthority("这是一个假权限");
-        authorities.add(authority);
-
-
+        List<SimpleGrantedAuthority> authorities
+                = JSON.parseArray(authoritiesJsonString, SimpleGrantedAuthority.class);
 
         // 创建Authentication对象
-        LoginPrincipal loginPrincipal=new LoginPrincipal(id,username);
+        LoginPrincipal loginPrincipal = new LoginPrincipal(id, username);
         Authentication authentication
                 = new UsernamePasswordAuthenticationToken(
                 loginPrincipal, null, authorities);

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Slf4j
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public SecurityConfiguration() {
@@ -65,7 +67,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests() // 管理请求授权
                 .mvcMatchers(HttpMethod.OPTIONS,"/**") // 匹配某些 请求路径
                 .permitAll() // 直接许可，即可不需要通过认证即可访问
-
                 .mvcMatchers(urls) // 匹配某些 请求路径
                 .permitAll() // 直接许可，即可不需要通过认证即可访问
                 .anyRequest() // 除了以上配置过的以外的其它所有请求

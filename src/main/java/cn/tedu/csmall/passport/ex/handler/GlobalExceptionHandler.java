@@ -4,6 +4,7 @@ import cn.tedu.csmall.passport.ex.ServiceException;
 import cn.tedu.csmall.passport.web.JsonResult;
 import cn.tedu.csmall.passport.web.ServiceCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -82,11 +83,18 @@ public class GlobalExceptionHandler {
         return JsonResult.fail(ServiceCode.ERR_UNAUTHORIZED_DISABLED, message);
     }
 
+    @ExceptionHandler
+    public JsonResult<Void> handleAccessDeniedException(AccessDeniedException e) {
+        log.debug("捕获到AccessDeniedException");
+        String message = "访问失败，当前登录的用户不具有此操作权限！";
+        return JsonResult.fail(ServiceCode.ERR_FORBIDDEN, message);
+    }
 
     @ExceptionHandler
-    public String handleThrowable(Throwable e){
-        String message="你有异常未被处理,根据服务器控制台信息补充异常!!!";
+    public String handleThrowable(Throwable e) {
+        String message = "你有异常没有处理，请根据服务器端控制台的信息，补充对此类异常的处理！！！";
         e.printStackTrace();
         return message;
     }
+
 }

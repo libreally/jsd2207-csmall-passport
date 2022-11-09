@@ -76,7 +76,7 @@
         FROM mall_ams.ams_admin
         WHERE email = #{email}
     </select>
-    <!-- AdminStandardVO getStandarId(Long id);-->
+    <!-- AdminStandardVO getStanderId(Long id);-->
     <select id="getStandardId" resultType="cn.tedu.csmall.passport.pojo.vo.AdminStandardVO">
         SELECT id,
                username,
@@ -109,9 +109,40 @@
         ORDER BY id
     </select>
     <!--AdminLonginInfoVO getLoginInfoByUsername(String username);-->
-    <select id="getLoginInfoByUsername" resultType="cn.tedu.csmall.passport.pojo.vo.AdminLonginInfoVO">
-        SELECT id,username,password,enable FROM mall_ams.ams_admin WHERE username=#{username}
+    <select id="getLoginInfoByUsername" resultMap="LoginResultMap">
+        SELECT
+        <include refid="LoginQueryFields" />
+        FROM
+        mall_ams.ams_admin
+        LEFT JOIN mall_ams.ams_admin_role
+        ON mall_ams.ams_admin.id=mall_ams.ams_admin_role.admin_id
+        LEFT JOIN mall_ams.ams_role_permission
+        ON mall_ams.ams_admin_role.role_id=mall_ams.ams_role_permission.role_id
+        LEFT JOIN mall_ams.ams_permission
+        ON mall_ams.ams_role_permission.permission_id=mall_ams.ams_permission.id
+        WHERE
+        username=#{username}
     </select>
+    <sql id="LoginQueryFields">
+        <if test="true">
+            mall_ams.ams_admin.id,
+            mall_ams.ams_admin.username,
+            mall_ams.ams_admin.password,
+            mall_ams.ams_admin.enable,
+            mall_ams.ams_permission.value
+        </if>
+    </sql>
+    <resultMap id="LoginResultMap" type="cn.tedu.csmall.passport.pojo.vo.AdminLonginInfoVO">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="enable" property="enable"/>
+        <collection ofType="String" property="permissions">
+            <constructor>
+                <arg column="value"/>
+            </constructor>
+        </collection>
+    </resultMap>
     <resultMap id="ListResultMap" type="cn.tedu.csmall.passport.pojo.vo.AdminListVO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>

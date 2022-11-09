@@ -13,11 +13,12 @@ import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
 import cn.tedu.csmall.passport.security.AdminDetails;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.ServiceCode;
+import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,14 +63,20 @@ public class AdminServiceImpl implements IAdminService {
         log.debug("认证结果中的当事人类型：{}", principal.getClass().getName());
         AdminDetails adminDetails = (AdminDetails) principal;
         String username = adminDetails.getUsername();
-        Long id=adminDetails.getId();
+        Long id = adminDetails.getId();
+        Collection<GrantedAuthority> authorities = adminDetails.getAuthorities();
+        String authoritiesJsonString = JSON.toJSONString(authorities);
 
         // 生成JWT数据时，需要填充装到JWT中的数据
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", 9527);
+        claims.put("id", id);
         claims.put("username", username);
+        claims.put("authoritiesJsonString", authoritiesJsonString);
+        log.debug("向JWT中存入id：{}", id);
+        log.debug("向JWT中存入username：{}", username);
+        log.debug("向JWT中存入authoritiesJsonString：{}", authoritiesJsonString);
         // 以下是生成JWT的固定代码
-        Date date = new Date(System.currentTimeMillis() + durationInMinute);
+        Date date = new Date(System.currentTimeMillis() + durationInMinute * 60 * 1000L);
         String jwt = Jwts.builder()
                 // Header
                 .setHeaderParam("alg", "HS256")
