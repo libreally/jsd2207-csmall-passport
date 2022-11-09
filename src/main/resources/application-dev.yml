@@ -18,3 +18,8 @@ spring:
 logging:
   level:
     cn.tedu.csmall: trace
+#JWT相关配置
+csmall:
+  jwt:
+    secret-key: a9F8ujGDhjgFvfEd3SA90ukDS
+    duration-in-minute: 14400

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -54,13 +55,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/v2/api-docs",
                 "/admins/login"
         };
-        http.cors();
+
+        //对所有的options请求放行 启用CorsFilter (String Security)自动调用
+        //http.cors();
         // 将防止伪造跨域攻击的机制禁用
         http.csrf().disable();
 
         // 提示：关于请求路径的配置，如果同一路径对应多项配置规则，以第1次配置的为准
         http.authorizeRequests() // 管理请求授权
-                .mvcMatchers(urls) // 匹配某些路径
+                .mvcMatchers(HttpMethod.OPTIONS,"/**") // 匹配某些 请求路径
+                .permitAll() // 直接许可，即可不需要通过认证即可访问
+
+                .mvcMatchers(urls) // 匹配某些 请求路径
                 .permitAll() // 直接许可，即可不需要通过认证即可访问
                 .anyRequest() // 除了以上配置过的以外的其它所有请求
                 .authenticated(); // 要求是“已经通过认证的”

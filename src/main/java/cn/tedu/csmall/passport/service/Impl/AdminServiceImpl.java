@@ -15,6 +15,7 @@ import cn.tedu.csmall.passport.web.ServiceCode;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,10 @@ public class AdminServiceImpl implements IAdminService {
     private AdminRoleMapper adminRoleMapper;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Value("${csmall.jwt.secret-key}")
+    private String secretKey;
+    @Value("${csmall.jwt.duration-in-minute}")
+    private Long durationInMinute;
 
     public AdminServiceImpl() {
         log.debug("创建业务对象：AdminServiceImpl");
@@ -62,8 +67,7 @@ public class AdminServiceImpl implements IAdminService {
         // claims.put("id", 9527);
         claims.put("username", username);
         // 以下是生成JWT的固定代码
-        String secretKey = "a9F8ujGDhjgFvfEd3SA90ukDS";
-        Date date = new Date(System.currentTimeMillis() + 5 * 24 * 60 * 60 * 1000L);
+        Date date = new Date(System.currentTimeMillis() + durationInMinute);
         String jwt = Jwts.builder()
                 // Header
                 .setHeaderParam("alg", "HS256")

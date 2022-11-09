@@ -3,6 +3,7 @@ package cn.tedu.csmall.passport.filter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,6 +38,8 @@ import java.util.List;
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
+    @Value("${csmall.jwt.secret-key}")
+    private String secretKey;
     public static final int JWT_MIN_LENGTH = 113;
 
     public JwtAuthorizationFilter() {
@@ -62,7 +65,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 尝试解析JWT
         log.debug("获取到的JWT被视为有效，准备解析JWT……");
-        String secretKey = "a9F8ujGDhjgFvfEd3SA90ukDS";
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
@@ -70,7 +72,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 获取JWT中的管理员信息
         String username = claims.get("username", String.class);
-
         // 处理权限信息
         List<GrantedAuthority> authorities = new ArrayList<>();
         GrantedAuthority authority = new SimpleGrantedAuthority("这是一个假权限");
