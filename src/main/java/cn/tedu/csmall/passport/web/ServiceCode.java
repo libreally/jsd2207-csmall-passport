@@ -15,6 +15,13 @@ public enum ServiceCode {
     ERR_BAD_REQUEST(40000),
     ERR_UNAUTHORIZED(40100),
     ERR_UNAUTHORIZED_DISABLED(40101),
+    //签名错误
+    ERR_JWT_SIGNATURE(60000),
+    //数据格式错误
+    ERR_JWT_MALFORMED(60100),
+    //JWT已过期
+    ERR_JWT_EXPIRED(60200),
+
     /**
      * 错误：数据不存在
      */

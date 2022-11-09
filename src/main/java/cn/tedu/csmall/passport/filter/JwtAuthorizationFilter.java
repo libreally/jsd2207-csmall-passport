@@ -1,7 +1,9 @@
 package cn.tedu.csmall.passport.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import cn.tedu.csmall.passport.web.JsonResult;
+import cn.tedu.csmall.passport.web.ServiceCode;
+import com.alibaba.fastjson.JSON;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,10 +68,35 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 尝试解析JWT
         log.debug("获取到的JWT被视为有效，准备解析JWT……");
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(jwt)
-                .getBody();
+        Claims claims = null;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(jwt)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            log.debug("解析JWT时出现ExpiredJwtException异常");
+            return;
+        } catch (MalformedJwtException e) {
+            log.debug("解析JWT时出现MalformedJwtException异常");
+            return;
+        } catch (SignatureException e) {
+            log.debug("解析JWT时出现SignatureException异常");
+
+            ServiceCode serviceCode = ServiceCode.ERR_JWT_SIGNATURE;
+            String message = "出现SignatureException";
+            JsonResult<Void> jsonResult=JsonResult.fail(serviceCode,message);
+            String jsonResultString= JSON.toJSONString(jsonResult);
+
+            response.setContentType("text/html;charset=utf-8");
+            PrintWriter printWriter= response.getWriter();
+            printWriter.println(jsonResultString);
+            return;
+        } catch (Throwable e) {
+            log.debug("解析JWT时出现Throwable异常,需要开发人员对异常的补充");
+            e.printStackTrace();
+            return;
+        }
 
         // 获取JWT中的管理员信息
         String username = claims.get("username", String.class);
