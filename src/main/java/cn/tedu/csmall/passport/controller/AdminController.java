@@ -3,6 +3,7 @@ package cn.tedu.csmall.passport.controller;
 import cn.tedu.csmall.passport.pojo.dto.AdminAddNewDTO;
 import cn.tedu.csmall.passport.pojo.dto.AdminLoginDTO;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
+import cn.tedu.csmall.passport.security.LoginPrincipal;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.JsonResult;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -12,8 +13,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,6 +33,8 @@ public class AdminController {
     public AdminController(){
         log.debug("创建控制器对象：AdminController");
     }
+
+
     @ApiOperation("添加管理员")
     @ApiOperationSupport(order = 100)
     @PostMapping("/add-new")
@@ -39,11 +44,14 @@ public class AdminController {
         log.debug("添加管理员成功！");
         return JsonResult.ok();
     }
+
     @ApiOperation("查询管理员列表")
     @ApiOperationSupport(order = 420)
     @GetMapping("")
-    public JsonResult<List<AdminListVO>> list() {
+    public JsonResult<List<AdminListVO>> list(
+            @ApiIgnore @AuthenticationPrincipal LoginPrincipal loginPrincipal) {
         log.debug("开始处理【查询管理员列表】的请求，无参数");
+        log.debug("当前登录的管理员{}",loginPrincipal);
         List<AdminListVO> list = iAdminService.list();
         return JsonResult.ok(list);
     }

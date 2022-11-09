@@ -1,5 +1,6 @@
 package cn.tedu.csmall.passport.filter;
 
+import cn.tedu.csmall.passport.security.LoginPrincipal;
 import cn.tedu.csmall.passport.web.JsonResult;
 import cn.tedu.csmall.passport.web.ServiceCode;
 import com.alibaba.fastjson.JSON;
@@ -22,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -68,7 +68,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 尝试解析JWT
         log.debug("获取到的JWT被视为有效，准备解析JWT……");
-        Claims claims = null;
+        Claims claims;
         try {
             claims = Jwts.parser()
                     .setSigningKey(secretKey)
@@ -84,10 +84,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.debug("解析JWT时出现SignatureException异常");
 
             ServiceCode serviceCode = ServiceCode.ERR_JWT_SIGNATURE;
-            String message = "出现SignatureException";
+            String message = "非法访问";
             JsonResult<Void> jsonResult=JsonResult.fail(serviceCode,message);
             String jsonResultString= JSON.toJSONString(jsonResult);
-
             response.setContentType("text/html;charset=utf-8");
             PrintWriter printWriter= response.getWriter();
             printWriter.println(jsonResultString);
@@ -100,15 +99,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         // 获取JWT中的管理员信息
         String username = claims.get("username", String.class);
+        Long id=claims.get("id",Long.class);
+
         // 处理权限信息
         List<GrantedAuthority> authorities = new ArrayList<>();
         GrantedAuthority authority = new SimpleGrantedAuthority("这是一个假权限");
         authorities.add(authority);
 
+
+
         // 创建Authentication对象
+        LoginPrincipal loginPrincipal=new LoginPrincipal(id,username);
         Authentication authentication
                 = new UsernamePasswordAuthenticationToken(
-                username, null, authorities);
+                loginPrincipal, null, authorities);
 
         // 将Authentication对象存入到SecurityContext
         log.debug("向SecurityContext中存入认证信息：{}", authentication);

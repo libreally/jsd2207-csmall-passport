@@ -10,6 +10,7 @@ import cn.tedu.csmall.passport.pojo.entity.Admin;
 import cn.tedu.csmall.passport.pojo.entity.AdminRole;
 import cn.tedu.csmall.passport.pojo.vo.AdminListVO;
 import cn.tedu.csmall.passport.pojo.vo.AdminStandardVO;
+import cn.tedu.csmall.passport.security.AdminDetails;
 import cn.tedu.csmall.passport.service.IAdminService;
 import cn.tedu.csmall.passport.web.ServiceCode;
 import io.jsonwebtoken.Jwts;
@@ -59,12 +60,13 @@ public class AdminServiceImpl implements IAdminService {
         // 从认证结果中获取所需的数据，将用于生成JWT
         Object principal = authenticateResult.getPrincipal();
         log.debug("认证结果中的当事人类型：{}", principal.getClass().getName());
-        User user = (User) principal;
-        String username = user.getUsername();
+        AdminDetails adminDetails = (AdminDetails) principal;
+        String username = adminDetails.getUsername();
+        Long id=adminDetails.getId();
 
         // 生成JWT数据时，需要填充装到JWT中的数据
         Map<String, Object> claims = new HashMap<>();
-        // claims.put("id", 9527);
+        claims.put("id", 9527);
         claims.put("username", username);
         // 以下是生成JWT的固定代码
         Date date = new Date(System.currentTimeMillis() + durationInMinute);
