@@ -3,9 +3,18 @@ package cn.tedu.csmall.passport.web;
 import cn.tedu.csmall.passport.ex.ServiceException;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-
+@Component
+@Controller
+@Service
+@Repository
+@Configuration
 @Data
 public class JsonResult<T> implements Serializable {
 

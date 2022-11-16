@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,8 @@ public class AdminServiceImpl implements IAdminService {
     private AdminMapper adminMapper;
     @Autowired
     private AdminRoleMapper adminRoleMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Value("${csmall.jwt.secret-key}")
@@ -145,6 +148,9 @@ public class AdminServiceImpl implements IAdminService {
         // 通过BeanUtils.copyProperties()方法将参数对象的各属性值复制到Admin对象中
         BeanUtils.copyProperties(adminAddNewDTO, admin);
         // TODO 取出密码，进行加密处理，并将密文封装回Admin对象中
+        String rawPassword = admin.getPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        admin.setPassword(encodedPassword);
         // 补全Admin对象中的属性值：loginCount >>> 0
         admin.setLoginCount(0);
         // 调用adminMapper的insert()方法插入数据
